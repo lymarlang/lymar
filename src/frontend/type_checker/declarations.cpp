@@ -832,6 +832,86 @@ TypePtr TypeChecker::check_import_statement(std::shared_ptr<LM::Frontend::AST::I
     alias_info.name = alias;
     frame_declarations[alias] = alias_info;
     declare_variable(alias, type_system.createFrameType(alias));
+
+    // If this module was already fully type-checked by PASS 0 (is_root path), its
+    // symbols are already registered in the root type system under their full
+    // `modulePath.name` keys.  We only need to bind alias-qualified names; there is
+    // no need to re-walk the AST and re-resolve every signature, which is both
+    // redundant and O(N²) when many modules share the same dependency.
+    if (is_root && module->is_checked) {
+        std::cerr << "[FAST PATH] " << import_stmt->modulePath << " is_checked=true alias=" << alias << std::endl;
+    } else if (is_root) {
+        std::cerr << "[SLOW PATH] " << import_stmt->modulePath << " is_checked=" << module->is_checked << std::endl;
+    }
+    if (is_root && module->is_checked) {
+        auto symbols_to_bind = manager.filter_symbols(module, import_stmt->filter);
+        for (const auto& sym_name : symbols_to_bind) {
+            // Resolve through re-export chain: if `sym_name` is a re-export, its
+            // canonical registration is under the defining module's path, not index.
+            std::string defining_mod = import_stmt->modulePath;
+            auto reexport_it = module->reexport_sources.find(sym_name);
+            if (reexport_it != module->reexport_sources.end()) {
+                defining_mod = reexport_it->second;
+            }
+            std::string full_path_base = defining_mod + "." + sym_name;
+            std::string alias_qname   = alias + "." + sym_name;
+
+            // Function signatures
+            if (function_signatures.count(full_path_base)) {
+                FunctionSignature sig = function_signatures[full_path_base];
+                sig.name = alias_qname;
+                function_signatures[alias_qname] = sig;
+                TypePtr ft = nullptr;
+                if (variable_types.count(full_path_base)) ft = variable_types[full_path_base];
+                if (ft) { declare_variable(alias_qname, ft); variable_types[alias_qname] = ft; }
+                if (import_stmt->filter && import_stmt->filter->type == LM::Frontend::AST::ImportFilterType::Show) {
+                    function_signatures[sym_name] = sig;
+                    if (ft) { declare_variable(sym_name, ft); variable_types[sym_name] = ft; }
+                }
+            }
+            // Frame types
+            if (frame_declarations.count(full_path_base)) {
+                frame_declarations[alias_qname] = frame_declarations[full_path_base];
+                TypePtr ft = type_system.getType(full_path_base);
+                if (ft) { type_system.addUserDefinedType(alias_qname, ft); declare_variable(alias_qname, ft); }
+                if (import_stmt->filter && import_stmt->filter->type == LM::Frontend::AST::ImportFilterType::Show) {
+                    frame_declarations[sym_name] = frame_declarations[full_path_base];
+                    if (ft) { type_system.addUserDefinedType(sym_name, ft); declare_variable(sym_name, ft); }
+                }
+                // Bind methods under alias_qname.method
+                for (const auto& [fname, fsig] : function_signatures) {
+                    if (fname.starts_with(full_path_base + ".")) {
+                        std::string method_suffix = fname.substr(full_path_base.size());
+                        function_signatures[alias_qname + method_suffix] = fsig;
+                    }
+                }
+            }
+            // Variables / constants
+            if (variable_types.count(full_path_base) && !function_signatures.count(full_path_base)) {
+                TypePtr vt = variable_types[full_path_base];
+                declare_variable(alias_qname, vt); variable_types[alias_qname] = vt;
+                if (import_stmt->filter && import_stmt->filter->type == LM::Frontend::AST::ImportFilterType::Show) {
+                    declare_variable(sym_name, vt); variable_types[sym_name] = vt;
+                }
+            }
+            // Type aliases
+            TypePtr ta = type_system.getType(full_path_base);
+            if (ta && ta->tag != TypeTag::Any && ta->tag != TypeTag::Nil && !frame_declarations.count(full_path_base)) {
+                try { type_system.registerTypeAlias(alias_qname, ta); } catch (...) {}
+                type_system.addUserDefinedType(alias_qname, ta);
+            }
+
+            // Always register the full_path_base form for unified lookup
+            if (import_stmt->filter) {
+                // show/hide: ensure callers can also use modulePath.sym
+                // (already registered by PASS 0, nothing extra needed)
+            }
+        }
+        return nullptr;
+    }
+
+    // Module not yet checked (sub-checker context or first encounter):
+    // walk the AST and register every symbol the old way.
     
     // Register all symbols from the module
     std::vector<std::shared_ptr<LM::Frontend::AST::Statement>> module_declarations(
@@ -1205,7 +1285,7 @@ TypePtr TypeChecker::check_import_statement(std::shared_ptr<LM::Frontend::AST::I
                 }
             }
         }
-    }
+    }  // end of: if not already-checked fast-path
 
     import_stmt->inferred_type = type_system.NIL_TYPE;
     return type_system.NIL_TYPE;

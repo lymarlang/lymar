@@ -306,10 +306,27 @@ pub var KIND_SCATTER_CHART: int = 47;
 pub var KIND_PIE_CHART: int = 48;
 pub var KIND_OVERLAY: int = 49;
 pub var KIND_FORM_FIELD: int = 50;
-pub var _shared_empty_style: Style = Style();
-pub var _shared_empty_shadow: shadow_mod.Shadow = shadow_mod.Shadow();
-pub var _shared_empty_trans: anim_mod.Transition = anim_mod.Transition();
-pub var _shared_empty_anim: anim_mod.PropertyAnimation = anim_mod.PropertyAnimation();
+pub var _shared_empty_style: Style? = nil;
+pub var _shared_empty_shadow: shadow_mod.Shadow? = nil;
+pub var _shared_empty_trans: anim_mod.Transition? = nil;
+pub var _shared_empty_anim: anim_mod.PropertyAnimation? = nil;
+
+pub fn _get_empty_style(): Style {
+    if (_shared_empty_style == nil) { _shared_empty_style = Style(); }
+    return _shared_empty_style as Style;
+}
+pub fn _get_empty_shadow(): shadow_mod.Shadow {
+    if (_shared_empty_shadow == nil) { _shared_empty_shadow = shadow_mod.Shadow(); }
+    return _shared_empty_shadow as shadow_mod.Shadow;
+}
+pub fn _get_empty_trans(): anim_mod.Transition {
+    if (_shared_empty_trans == nil) { _shared_empty_trans = anim_mod.Transition(); }
+    return _shared_empty_trans as anim_mod.Transition;
+}
+pub fn _get_empty_anim(): anim_mod.PropertyAnimation {
+    if (_shared_empty_anim == nil) { _shared_empty_anim = anim_mod.PropertyAnimation(); }
+    return _shared_empty_anim as anim_mod.PropertyAnimation;
+}
 
 // Unified Retained UI Node with Fluent Modifiers
 frame Widget {
@@ -409,8 +426,8 @@ frame Widget {
         self.click_count = 0;
         self.width_val = 0.0;
         self.height_val = 0.0;
-        self.pressed_style_val = _shared_empty_style;
-        self.hover_style_val = _shared_empty_style;
+        self.pressed_style_val = _get_empty_style();
+        self.hover_style_val = _get_empty_style();
         self.is_checked = 0;
         self.slider_val = 0.0;
         self.slider_min = 0.0;
@@ -425,12 +442,12 @@ frame Widget {
         self.is_open = 0;
         self.opacity_val = 1.0;
         self.scale_val = 1.0;
-        self.shadow_val = _shared_empty_shadow;
+        self.shadow_val = _get_empty_shadow();
         self.lifecycle_state = 1;
-        self.enter_transition = _shared_empty_trans;
-        self.exit_transition = _shared_empty_trans;
-        self.anim_property = _shared_empty_anim;
-        self.active_transition = _shared_empty_trans;
+        self.enter_transition = _get_empty_trans();
+        self.exit_transition = _get_empty_trans();
+        self.anim_property = _get_empty_anim();
+        self.active_transition = _get_empty_trans();
 
         self.text_editor_state = nil;
         self.scroll_x = 0.0;

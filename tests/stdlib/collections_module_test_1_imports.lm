@@ -1,0 +1,46 @@
+// Test 1: Just imports
+print("Test 1: Testing imports");
+
+import std.collections.list as list_col;
+print("  - list imported");
+
+import std.collections.deque as deque_col;
+print("  - deque imported");
+
+import std.collections.linked_list as linked_list_col;
+print("  - linked_list imported");
+
+import std.collections.map as map_col;
+print("  - map imported");
+
+import std.collections.hashmap as hashmap_col;
+print("  - hashmap imported");
+
+import std.collections.hashset as hashset_col;
+print("  - hashset imported");
+
+import std.collections.btreemap as btreemap_col;
+print("  - btreemap imported");
+
+import std.collections.btreeset as btreeset_col;
+print("  - btreeset imported");
+
+import std.collections.queue as queue_col;
+print("  - queue imported");
+
+import std.collections.stack as stack_col;
+print("  - stack imported");
+
+import std.collections.priority_queue as pq_col;
+print("  - priority_queue imported");
+
+import std.collections.bitset as bitset_col;
+print("  - bitset imported");
+
+import std.collections.bloom_filter as bloom_col;
+print("  - bloom_filter imported");
+
+import std.collections.index as collections;
+print("  - collections index imported");
+
+print("All imports complete!");

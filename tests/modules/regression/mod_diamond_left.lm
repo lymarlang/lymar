@@ -1,0 +1,6 @@
+// Diamond left - imports base
+import tests.modules.regression.mod_a as base;
+
+pub fn left_value(): str {
+    return "left_" + base.a_func();
+}

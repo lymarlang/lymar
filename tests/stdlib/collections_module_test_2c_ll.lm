@@ -1,0 +1,7 @@
+// Test 2c: Just linked_list import
+print("Test 2c: Testing linked_list import");
+
+import std.collections.linked_list as linked_list_col;
+print("  - linked_list imported OK");
+
+print("Done!");

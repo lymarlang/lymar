@@ -1,0 +1,274 @@
+// tests/regex/test_regex_complete.lm
+// Complete test suite for std.regex (pattern matching and extraction)
+
+import std.regex as regex;
+
+fn test_basic_match() {
+    print("=== TEST 1: Basic Pattern Match ===");
+    
+    var text = "Hello, World!";
+    var pattern = "Hello";
+    
+    var result = regex.matches(text, pattern);
+    assert(result == true, "Should match literal text");
+    
+    var no_match = regex.matches(text, "Goodbye");
+    assert(no_match == false, "Should not match different text");
+    
+    print("  ✓ Basic pattern matching works");
+}
+
+fn test_case_insensitive() {
+    print("=== TEST 2: Case Insensitive Matching ===");
+    
+    var text = "Hello World";
+    
+    var match_lower = regex.matches_ignore_case(text, "hello");
+    assert(match_lower == true, "Should match case-insensitive");
+    
+    var match_upper = regex.matches_ignore_case(text, "HELLO");
+    assert(match_upper == true, "Should match uppercase");
+    
+    print("  ✓ Case-insensitive matching works");
+}
+
+fn test_digit_pattern() {
+    print("=== TEST 3: Digit Pattern ===");
+    
+    var text = "Phone: 555-1234";
+    var pattern = "\\d+";  // Match one or more digits
+    
+    var has_digits = regex.matches(text, pattern);
+    assert(has_digits == true, "Should match digits");
+    
+    print("  ✓ Digit pattern matching works");
+}
+
+fn test_word_pattern() {
+    print("=== TEST 4: Word Pattern ===");
+    
+    var text = "The quick brown fox";
+    var pattern = "\\w+";  // Match word characters
+    
+    var has_words = regex.matches(text, pattern);
+    assert(has_words == true, "Should match word characters");
+    
+    print("  ✓ Word pattern matching works");
+}
+
+fn test_whitespace_pattern() {
+    print("=== TEST 5: Whitespace Pattern ===");
+    
+    var text = "Hello   World";
+    var pattern = "\\s+";  // Match whitespace
+    
+    var has_space = regex.matches(text, pattern);
+    assert(has_space == true, "Should match whitespace");
+    
+    print("  ✓ Whitespace pattern matching works");
+}
+
+fn test_email_pattern() {
+    print("=== TEST 6: Email Pattern ===");
+    
+    var valid_email = "user@example.com";
+    var email_pattern = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}";
+    
+    var is_email = regex.matches(valid_email, email_pattern);
+    assert(is_email == true, "Should match valid email");
+    
+    var invalid_email = "not an email";
+    var not_email = regex.matches(invalid_email, email_pattern);
+    assert(not_email == false, "Should not match invalid email");
+    
+    print("  ✓ Email pattern matching works");
+}
+
+fn test_url_pattern() {
+    print("=== TEST 7: URL Pattern ===");
+    
+    var url = "https://example.com";
+    var url_pattern = "https?://[a-zA-Z0-9.-]+";
+    
+    var is_url = regex.matches(url, url_pattern);
+    assert(is_url == true, "Should match URL");
+    
+    print("  ✓ URL pattern matching works");
+}
+
+fn test_optional_pattern() {
+    print("=== TEST 8: Optional Pattern ===");
+    
+    var text1 = "color";
+    var text2 = "colour";
+    var pattern = "colou?r";  // u is optional
+    
+    var match1 = regex.matches(text1, pattern);
+    var match2 = regex.matches(text2, pattern);
+    
+    assert(match1 == true, "Should match color");
+    assert(match2 == true, "Should match colour");
+    
+    print("  ✓ Optional pattern matching works");
+}
+
+fn test_alternation() {
+    print("=== TEST 9: Alternation Pattern ===");
+    
+    var text1 = "cat";
+    var text2 = "dog";
+    var pattern = "cat|dog";  // Either cat or dog
+    
+    var match1 = regex.matches(text1, pattern);
+    var match2 = regex.matches(text2, pattern);
+    var no_match = regex.matches("bird", pattern);
+    
+    assert(match1 == true, "Should match cat");
+    assert(match2 == true, "Should match dog");
+    assert(no_match == false, "Should not match bird");
+    
+    print("  ✓ Alternation pattern matching works");
+}
+
+fn test_grouping() {
+    print("=== TEST 10: Grouping Pattern ===");
+    
+    var text1 = "ababab";
+    var pattern = "(ab)+";  // One or more ab
+    
+    var match = regex.matches(text1, pattern);
+    assert(match == true, "Should match repeated group");
+    
+    print("  ✓ Grouping pattern matching works");
+}
+
+fn test_extraction() {
+    print("=== TEST 11: Pattern Extraction ===");
+    
+    var text = "The price is $99.99";
+    var pattern = "\\$(\\d+\\.\\d{2})";  // Extract price
+    
+    var extracted = regex.extract(text, pattern);
+    assert(extracted != nil, "Should extract pattern");
+    
+    print("  ✓ Pattern extraction works");
+}
+
+fn test_replace() {
+    print("=== TEST 12: Pattern Replace ===");
+    
+    var text = "The year is 2024";
+    var pattern = "\\d+";  // Match digits
+    var replacement = "YYYY";
+    
+    var replaced = regex.replace(text, pattern, replacement);
+    assert(replaced != nil, "Should replace pattern");
+    assert(len(replaced) > 0, "Replaced text should not be empty");
+    
+    print("  ✓ Pattern replacement works");
+}
+
+fn test_split() {
+    print("=== TEST 13: Pattern Split ===");
+    
+    var text = "apple,banana,cherry";
+    var pattern = ",";
+    
+    var parts = regex.split(text, pattern);
+    assert(parts != nil, "Should split by pattern");
+    assert(len(parts) == 3, "Should split into 3 parts");
+    
+    print("  ✓ Pattern split works");
+}
+
+fn test_special_chars() {
+    print("=== TEST 14: Special Characters in Pattern ===");
+    
+    var text = "Price: $100.00";
+    var pattern = "\\$\\d+\\.\\d{2}";  // Escaped special chars
+    
+    var match = regex.matches(text, pattern);
+    assert(match == true, "Should match escaped special characters");
+    
+    print("  ✓ Special character handling works");
+}
+
+fn test_anchors() {
+    print("=== TEST 15: Anchors (Start/End) ===");
+    
+    var text = "Hello World";
+    
+    var start_pattern = "^Hello";  // Start with Hello
+    var end_pattern = "World$";    // End with World
+    
+    var match_start = regex.matches(text, start_pattern);
+    var match_end = regex.matches(text, end_pattern);
+    
+    assert(match_start == true, "Should match start anchor");
+    assert(match_end == true, "Should match end anchor");
+    
+    print("  ✓ Anchor patterns work");
+}
+
+fn main() {
+    print("╔════════════════════════════════════════════════════════════╗");
+    print("║  std.regex COMPLETE TEST SUITE                            ║");
+    print("║  Testing: Patterns, Extraction, Replacement, Splitting    ║");
+    print("╚════════════════════════════════════════════════════════════╝\n");
+    
+    var passed = 0;
+    
+    test_basic_match();
+    passed = passed + 1;
+    
+    test_case_insensitive();
+    passed = passed + 1;
+    
+    test_digit_pattern();
+    passed = passed + 1;
+    
+    test_word_pattern();
+    passed = passed + 1;
+    
+    test_whitespace_pattern();
+    passed = passed + 1;
+    
+    test_email_pattern();
+    passed = passed + 1;
+    
+    test_url_pattern();
+    passed = passed + 1;
+    
+    test_optional_pattern();
+    passed = passed + 1;
+    
+    test_alternation();
+    passed = passed + 1;
+    
+    test_grouping();
+    passed = passed + 1;
+    
+    test_extraction();
+    passed = passed + 1;
+    
+    test_replace();
+    passed = passed + 1;
+    
+    test_split();
+    passed = passed + 1;
+    
+    test_special_chars();
+    passed = passed + 1;
+    
+    test_anchors();
+    passed = passed + 1;
+    
+    var total = 15;
+    
+    print("\n╔════════════════════════════════════════════════════════════╗");
+    print("║  SUMMARY                                                  ║");
+    print("║  Total: {total}                                           ║");
+    print("║  Passed: {passed}                                         ║");
+    print("║  Status: ✓ ALL TESTS PASSED                              ║");
+    print("╚════════════════════════════════════════════════════════════╝");
+}

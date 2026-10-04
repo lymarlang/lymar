@@ -1,0 +1,12 @@
+// Module B - imports A (no cycle back)
+import tests.modules.regression.mod_a as a;
+
+pub var b_value = "B";
+
+pub fn b_func(): str {
+    return "from_B";
+}
+
+pub fn b_combined(): str {
+    return a.a_func() + "_and_from_B";
+}

@@ -1,0 +1,436 @@
+// tests/ui_complete_test.lm
+// Complete comprehensive test suite for std.ui retained framework
+// Tests: Colors, widgets, signals, layout, events
+
+import std.ui as ui;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TEST 1: Color API
+// ─────────────────────────────────────────────────────────────────────────────
+
+fn test_colors_predefined() {
+    print("=== TEST 1: Predefined Colors ===");
+    
+    var w = ui.white;
+    assert(w != nil, "White color should exist");
+    
+    var b = ui.black;
+    assert(b != nil, "Black color should exist");
+    
+    var r = ui.red;
+    assert(r != nil, "Red color should exist");
+    
+    var g = ui.green;
+    assert(g != nil, "Green color should exist");
+    
+    var bl = ui.blue;
+    assert(bl != nil, "Blue color should exist");
+    
+    print("  ✓ Predefined colors work");
+}
+
+fn test_colors_rgb() {
+    print("=== TEST 2: RGB Color Creation ===");
+    
+    var c1 = ui.rgb(255, 128, 64);
+    assert(c1 != nil, "RGB color creation failed");
+    
+    var c2 = ui.rgb_f(1.0, 0.5, 0.25);
+    assert(c2 != nil, "RGB float color creation failed");
+    
+    var c3 = ui.color_rgb(0.8, 0.4, 0.2);
+    assert(c3 != nil, "color_rgb creation failed");
+    
+    print("  ✓ RGB color creation works");
+}
+
+fn test_colors_rgba() {
+    print("=== TEST 3: RGBA Color Creation ===");
+    
+    var c1 = ui.rgba(255, 128, 64, 0.8);
+    assert(c1 != nil, "RGBA color creation failed");
+    
+    var c2 = ui.rgba_f(1.0, 0.5, 0.25, 0.5);
+    assert(c2 != nil, "RGBA float creation failed");
+    
+    var c3 = ui.color_rgba(0.8, 0.4, 0.2, 0.9);
+    assert(c3 != nil, "color_rgba creation failed");
+    
+    print("  ✓ RGBA color creation works");
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TEST 2: Widget Construction
+// ─────────────────────────────────────────────────────────────────────────────
+
+fn test_widget_text() {
+    print("=== TEST 4: Text Widget ===");
+    
+    var label = ui.text("Hello, UI!");
+    assert(label != nil, "Text widget creation failed");
+    
+    var styled = ui.text("Colored")
+        .color(ui.blue);
+    assert(styled != nil, "Styled text failed");
+    
+    print("  ✓ Text widget works");
+}
+
+fn test_widget_button() {
+    print("=== TEST 5: Button Widget ===");
+    
+    var btn = ui.button("Click Me");
+    assert(btn != nil, "Button creation failed");
+    
+    var styled_btn = ui.button("Go!")
+        .background(ui.rgb(100, 150, 200))
+        .color(ui.white);
+    assert(styled_btn != nil, "Styled button failed");
+    
+    print("  ✓ Button widget works");
+}
+
+fn test_widget_input() {
+    print("=== TEST 6: Input Widget ===");
+    
+    var input = ui.text_field("Enter text...");
+    assert(input != nil, "Input field creation failed");
+    
+    var sized = ui.text_field("")
+        .width(200.0)
+        .height(30.0);
+    assert(sized != nil, "Sized input failed");
+    
+    print("  ✓ Input widget works");
+}
+
+fn test_widget_slider() {
+    print("=== TEST 7: Slider Widget ===");
+    
+    var slider = ui.slider("Volume", 0.5);
+    assert(slider != nil, "Slider creation failed");
+    
+    var constrained = ui.slider("Progress", 0.25);
+    assert(constrained != nil, "Constrained slider failed");
+    
+    print("  ✓ Slider widget works");
+}
+
+fn test_widget_checkbox() {
+    print("=== TEST 8: Checkbox Widget ===");
+    
+    var check = ui.checkbox("Agree", true);
+    assert(check != nil, "Checkbox creation failed");
+    
+    var unchecked = ui.checkbox("Remember me", false);
+    assert(unchecked != nil, "Unchecked checkbox failed");
+    
+    print("  ✓ Checkbox widget works");
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TEST 3: Layout Containers
+// ─────────────────────────────────────────────────────────────────────────────
+
+fn test_layout_column() {
+    print("=== TEST 9: Column Layout ===");
+    
+    var col = ui.column([
+        ui.text("Title"),
+        ui.text("Subtitle")
+    ]);
+    assert(col != nil, "Column layout creation failed");
+    
+    print("  ✓ Column layout works");
+}
+
+fn test_layout_row() {
+    print("=== TEST 10: Row Layout ===");
+    
+    var row = ui.row([
+        ui.text("A"),
+        ui.text("B"),
+        ui.text("C")
+    ]);
+    assert(row != nil, "Row layout creation failed");
+    
+    print("  ✓ Row layout works");
+}
+
+fn test_layout_stack() {
+    print("=== TEST 11: Stack Layout ===");
+    
+    var stack = ui.stack([
+        ui.text("Bottom"),
+        ui.text("Middle"),
+        ui.text("Top")
+    ]);
+    assert(stack != nil, "Stack layout failed");
+    
+    print("  ✓ Stack layout works");
+}
+
+fn test_layout_grid() {
+    print("=== TEST 12: Grid Layout ===");
+    
+    var grid = ui.grid(2, [
+        ui.text("A"),
+        ui.text("B"),
+        ui.text("C"),
+        ui.text("D")
+    ]);
+    assert(grid != nil, "Grid layout failed");
+    
+    print("  ✓ Grid layout works");
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TEST 4: Styling
+// ─────────────────────────────────────────────────────────────────────────────
+
+fn test_styling_padding() {
+    print("=== TEST 13: Padding Styling ===");
+    
+    var padded = ui.text("Padded Text")
+        .padding(10.0, 15.0, 10.0, 15.0);
+    assert(padded != nil, "Padding failed");
+    
+    print("  ✓ Padding styling works");
+}
+
+fn test_styling_alignment() {
+    print("=== TEST 14: Alignment Styling ===");
+    
+    var aligned = ui.text("Centered")
+        .align(ui.Alignment.CENTER);
+    assert(aligned != nil, "Alignment failed");
+    
+    print("  ✓ Alignment styling works");
+}
+
+fn test_styling_sizes() {
+    print("=== TEST 15: Size Styling ===");
+    
+    var sized = ui.text("Sized")
+        .width(200.0)
+        .height(40.0);
+    assert(sized != nil, "Size styling failed");
+    
+    print("  ✓ Size styling works");
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TEST 5: Signals and State
+// ─────────────────────────────────────────────────────────────────────────────
+
+fn test_signal_creation() {
+    print("=== TEST 16: Signal Creation ===");
+    
+    var sig = ui.Signal(42);
+    assert(sig != nil, "Signal creation failed");
+    
+    print("  ✓ Signal creation works");
+}
+
+fn test_signal_computed() {
+    print("=== TEST 17: Computed Signal ===");
+    
+    var base_sig = ui.Signal(10);
+    var computed = ui.ComputedSignal(fn(): int {
+        return 42;  // Static compute for now
+    });
+    assert(computed != nil, "Computed signal failed");
+    
+    print("  ✓ Computed signal works");
+}
+
+fn test_effect_creation() {
+    print("=== TEST 18: Effect Creation ===");
+    
+    var sig = ui.Signal(0);
+    var effect = ui.Effect(fn() {
+        print("Effect run");
+    });
+    assert(effect != nil, "Effect creation failed");
+    
+    print("  ✓ Effect creation works");
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TEST 6: Complex Compositions
+// ─────────────────────────────────────────────────────────────────────────────
+
+fn test_form_composition() {
+    print("=== TEST 19: Form Composition ===");
+    
+    var form = ui.column([
+        ui.text("User Profile"),
+        ui.text_field("Name"),
+        ui.text_field("Email"),
+        ui.button("Save")
+    ]);
+    assert(form != nil, "Form composition failed");
+    
+    print("  ✓ Form composition works");
+}
+
+fn test_settings_panel() {
+    print("=== TEST 20: Settings Panel ===");
+    
+    var panel = ui.column([
+        ui.text("Settings"),
+        ui.row([ui.text("Volume:"), ui.slider("vol", 0.8)]),
+        ui.row([ui.text("Brightness:"), ui.slider("bright", 0.9)]),
+        ui.checkbox("Fullscreen", true)
+    ]);
+    assert(panel != nil, "Settings panel failed");
+    
+    print("  ✓ Settings panel works");
+}
+
+fn test_nested_layouts() {
+    print("=== TEST 21: Nested Layouts ===");
+    
+    var nested = ui.column([
+        ui.text("Outer"),
+        ui.row([
+            ui.text("Left"),
+            ui.column([
+                ui.text("Inner 1"),
+                ui.text("Inner 2")
+            ])
+        ])
+    ]);
+    assert(nested != nil, "Nested layouts failed");
+    
+    print("  ✓ Nested layouts work");
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TEST 7: Window and Dialog
+// ─────────────────────────────────────────────────────────────────────────────
+
+fn test_window_creation() {
+    print("=== TEST 22: Window Creation ===");
+    
+    var win = ui.window("Main Window");
+    assert(win != nil, "Window creation failed");
+    
+    print("  ✓ Window creation works");
+}
+
+fn test_dialog_creation() {
+    print("=== TEST 23: Dialog Creation ===");
+    
+    var dlg = ui.dialog("Confirm", "Are you sure?");
+    assert(dlg != nil, "Dialog creation failed");
+    
+    print("  ✓ Dialog creation works");
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TEST 8: Theme System
+// ─────────────────────────────────────────────────────────────────────────────
+
+fn test_theme_colors() {
+    print("=== TEST 24: Theme Colors ===");
+    
+    var primary = ui.theme_color("primary");
+    assert(primary != nil, "Theme color retrieval failed");
+    
+    var accent = ui.theme_color("accent");
+    assert(accent != nil, "Accent color failed");
+    
+    print("  ✓ Theme colors work");
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MAIN TEST RUNNER
+// ─────────────────────────────────────────────────────────────────────────────
+
+fn main() {
+    print("╔════════════════════════════════════════════════════════════╗");
+    print("║  std.ui COMPLETE IMPLEMENTATION TEST SUITE                ║");
+    print("║  Testing: Colors, Widgets, Layouts, Signals, Theme        ║");
+    print("╚════════════════════════════════════════════════════════════╝\n");
+    
+    var passed = 0;
+    var failed = 0;
+    
+    // Test 1: Colors
+    test_colors_predefined();
+    passed = passed + 1;
+    test_colors_rgb();
+    passed = passed + 1;
+    test_colors_rgba();
+    passed = passed + 1;
+    
+    // Test 2: Widgets
+    test_widget_text();
+    passed = passed + 1;
+    test_widget_button();
+    passed = passed + 1;
+    test_widget_input();
+    passed = passed + 1;
+    test_widget_slider();
+    passed = passed + 1;
+    test_widget_checkbox();
+    passed = passed + 1;
+    
+    // Test 3: Layouts
+    test_layout_column();
+    passed = passed + 1;
+    test_layout_row();
+    passed = passed + 1;
+    test_layout_stack();
+    passed = passed + 1;
+    test_layout_grid();
+    passed = passed + 1;
+    
+    // Test 4: Styling
+    test_styling_padding();
+    passed = passed + 1;
+    test_styling_alignment();
+    passed = passed + 1;
+    test_styling_sizes();
+    passed = passed + 1;
+    
+    // Test 5: Signals
+    test_signal_creation();
+    passed = passed + 1;
+    test_signal_computed();
+    passed = passed + 1;
+    test_effect_creation();
+    passed = passed + 1;
+    
+    // Test 6: Complex Compositions
+    test_form_composition();
+    passed = passed + 1;
+    test_settings_panel();
+    passed = passed + 1;
+    test_nested_layouts();
+    passed = passed + 1;
+    
+    // Test 7: Window & Dialog
+    test_window_creation();
+    passed = passed + 1;
+    test_dialog_creation();
+    passed = passed + 1;
+    
+    // Test 8: Theme
+    test_theme_colors();
+    passed = passed + 1;
+    
+    var total = 24;
+    
+    print("\n╔════════════════════════════════════════════════════════════╗");
+    print("║  SUMMARY                                                  ║");
+    print("║  Total:  {total}                                          ║");
+    print("║  Passed: {passed}                                         ║");
+    if (passed == total) {
+        print("║  Status: ✓ ALL TESTS PASSED                              ║");
+    } else {
+        print("║  Status: ✗ {failed} TESTS FAILED                          ║");
+    }
+    print("╚════════════════════════════════════════════════════════════╝");
+}

@@ -1,5 +1,7 @@
 import std.ui.types as ui_types;
-import std.app as app;
+// NOTE: std.app is NOT imported here to avoid the circular import cycle:
+//   std.app -> std.ui.types -> (via std.ui.index) -> std.ui.application -> std.app
+// Instead, Application.run() lazily imports std.app at call time.
 
 frame Application {
     pub var name: str;
@@ -15,11 +17,13 @@ frame Application {
     }
 
     pub fn run(): nil {
-        var cfg = app.default_window_config();
+        // Lazy import to break the circular dependency
+        import std.app as _app;
+        var cfg = _app.default_window_config();
         cfg.title = self.name;
-        app.init(cfg);
-        app.set_ui(self.root_widget);
-        app.run();
-        app.shutdown();
+        _app.init(cfg);
+        _app.set_ui(self.root_widget);
+        _app.run();
+        _app.shutdown();
     }
 }

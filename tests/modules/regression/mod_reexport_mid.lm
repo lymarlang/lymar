@@ -1,0 +1,6 @@
+// Mid module that re-exports from source
+pub import tests.modules.regression.mod_reexport_source show source_func;
+
+pub fn mid_func(): str {
+    return "mid";
+}

@@ -1,0 +1,16 @@
+// Regression: diamond dependency (root -> left -> base, root -> right -> base)
+// base must not be double-initialised; left and right must both work
+print("=== Diamond Dependency Test ===");
+
+import tests.modules.regression.mod_diamond_left as left;
+import tests.modules.regression.mod_diamond_right as right;
+import tests.modules.regression.mod_a as base;
+
+assert(left.left_value() == "left_from_A", "left should compose with base");
+assert(right.right_value() == "right_from_A", "right should compose with base");
+assert(base.a_func() == "from_A", "direct base import should also work");
+
+print("left.left_value()  = {left.left_value()}");
+print("right.right_value() = {right.right_value()}");
+print("base.a_func()       = {base.a_func()}");
+print("=== Diamond Dependency Test Complete ===");

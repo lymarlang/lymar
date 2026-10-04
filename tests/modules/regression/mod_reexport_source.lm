@@ -1,0 +1,6 @@
+// Source module for re-export diamond test
+pub fn source_func(): str {
+    return "source";
+}
+
+pub var source_val = "source_val";

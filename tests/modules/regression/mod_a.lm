@@ -1,0 +1,6 @@
+// Module A - used in cycle and diamond tests
+pub var a_value = "A";
+
+pub fn a_func(): str {
+    return "from_A";
+}

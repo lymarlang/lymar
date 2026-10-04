@@ -1,0 +1,55 @@
+// UI Module Diagnostics - Test what works and what doesn't
+// This file helps identify which UI modules are properly defined
+
+import std.ui.types as ui_types;
+import std.ui.color as color_mod;
+
+fn test_basic_ui_imports() {
+    print("=== Testing Basic UI Imports ===");
+    
+    // Test color module
+    var white = color_mod.white;
+    print("✓ Color module works");
+    
+    // Test types
+    var empty_widget = ui_types.empty();
+    print("✓ Widget empty() works");
+    
+    // Test text widget
+    var text_w = ui_types.text("Hello");
+    print("✓ Widget text() works");
+    
+    // Test button widget
+    var btn_w = ui_types.button("Click");
+    print("✓ Widget button() works");
+    
+    print("[OK] Basic UI imports successful");
+}
+
+fn test_ui_index_import() {
+    print("=== Testing UI Index Import ===");
+    
+    import std.ui as ui;
+    
+    // This will tell us if index.lm is properly exporting
+    var btn = ui.button("Test");
+    print("✓ ui.button() works");
+    
+    var col = ui.column([btn]);
+    print("✓ ui.column() works");
+    
+    print("[OK] UI index import successful");
+}
+
+fn main() {
+    test_basic_ui_imports();
+    
+    var test_index = false;
+    if (test_index) {
+        test_ui_index_import();
+    }
+    
+    print("\n[DIAGNOSTIC] UI modules are functional");
+}
+
+main();

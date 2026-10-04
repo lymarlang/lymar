@@ -1,0 +1,19 @@
+// Regression: re-export diamond
+// source <- mid (pub import show source_func) <- this file
+// Also imports source directly; canonical resolution must be consistent
+print("=== Re-export Diamond Test ===");
+
+import tests.modules.regression.mod_reexport_mid as mid;
+import tests.modules.regression.mod_reexport_source as source;
+
+// Direct access
+assert(source.source_func() == "source", "direct source_func should work");
+assert(source.source_val == "source_val", "direct source_val should work");
+
+// Re-exported access
+assert(mid.source_func() == "source", "re-exported source_func should work");
+assert(mid.mid_func() == "mid", "mid's own func should work");
+
+print("source.source_func() = {source.source_func()}");
+print("mid.source_func()    = {mid.source_func()}");
+print("=== Re-export Diamond Test Complete ===");

@@ -1,0 +1,202 @@
+// tests/compress/test_compress_complete.lm
+// Complete test suite for std.compress (zlib compression/decompression)
+
+import std.compress as compress;
+
+fn test_round_trip_basic() {
+    print("=== TEST 1: Compression Round Trip (Basic) ===");
+    
+    var text = "Hello, Compression!";
+    var compressed = compress.compress(text, 6);
+    assert(compressed != nil, "Compress should return non-nil");
+    assert(len(compressed) > 0, "Compressed data should not be empty");
+    
+    var decompressed = compress.decompress(compressed);
+    assert(decompressed != nil, "Decompress should return non-nil");
+    assert(decompressed == text, "Decompressed text must match original");
+    
+    print("  ✓ Basic round trip successful");
+}
+
+fn test_compression_levels() {
+    print("=== TEST 2: Compression Levels ===");
+    
+    var text = "Limitly is a modern, fast, and concurrent systems programming language. " +
+               "Repeating sentences compress exceptionally well under deflate.";
+    
+    var comp_level_1 = compress.compress(text, 1);
+    assert(comp_level_1 != nil, "Compression level 1 should work");
+    
+    var comp_level_6 = compress.compress(text, 6);
+    assert(comp_level_6 != nil, "Compression level 6 should work");
+    
+    var comp_level_9 = compress.compress(text, 9);
+    assert(comp_level_9 != nil, "Compression level 9 should work");
+    
+    // Higher compression levels typically produce smaller output
+    // But this isn't always guaranteed, so we just check they're valid
+    assert(len(comp_level_1) > 0, "Level 1 compression output valid");
+    assert(len(comp_level_9) > 0, "Level 9 compression output valid");
+    
+    print("  ✓ All compression levels work");
+}
+
+fn test_empty_string() {
+    print("=== TEST 3: Empty String ===");
+    
+    var empty = "";
+    var compressed = compress.compress(empty, 6);
+    assert(compressed != nil, "Compress empty string should work");
+    
+    var decompressed = compress.decompress(compressed);
+    assert(decompressed == empty, "Decompressed empty should be empty");
+    
+    print("  ✓ Empty string handling works");
+}
+
+fn test_large_data() {
+    print("=== TEST 4: Large Data ===");
+    
+    var large = "";
+    for (var i = 0; i < 1000; i = i + 1) {
+        large = large + "Repetitive data that should compress well! ";
+    }
+    
+    var compressed = compress.compress(large, 6);
+    assert(compressed != nil, "Compress large data should work");
+    assert(len(compressed) < len(large), "Compressed should be smaller than original");
+    
+    var decompressed = compress.decompress(compressed);
+    assert(decompressed == large, "Large data decompression must match");
+    
+    print("  ✓ Large data compression works");
+}
+
+fn test_binary_data() {
+    print("=== TEST 5: Binary Data ===");
+    
+    var binary = "";
+    for (var i = 0; i < 256; i = i + 1) {
+        binary = binary + "X";  // Simplified binary representation
+    }
+    
+    var compressed = compress.compress(binary, 6);
+    assert(compressed != nil, "Compress binary should work");
+    
+    var decompressed = compress.decompress(compressed);
+    assert(decompressed == binary, "Binary decompression must match");
+    assert(len(decompressed) == len(binary), "Binary length must match");
+    
+    print("  ✓ Binary data compression works");
+}
+
+fn test_compression_ratio() {
+    print("=== TEST 6: Compression Ratio ===");
+    
+    var text = "AAAAAABBBBBBCCCCCC";
+    var original_len = len(text);
+    
+    var compressed = compress.compress(text, 9);
+    var compressed_len = len(compressed);
+    
+    print("  Original size: {original_len}");
+    print("  Compressed size: {compressed_len}");
+    
+    assert(compressed_len > 0, "Compressed size should be positive");
+    
+    var ratio = (original_len as float) / (compressed_len as float);
+    print("  Compression ratio: {ratio}x");
+    
+    print("  ✓ Compression ratio calculated");
+}
+
+fn test_consistency() {
+    print("=== TEST 7: Consistency ===");
+    
+    var text = "Consistency test data";
+    
+    var compressed1 = compress.compress(text, 6);
+    var compressed2 = compress.compress(text, 6);
+    assert(compressed1 == compressed2, "Same input with same level should produce same output");
+    
+    var decompressed1 = compress.decompress(compressed1);
+    var decompressed2 = compress.decompress(compressed2);
+    assert(decompressed1 == decompressed2, "Decompression of same data should match");
+    
+    print("  ✓ Compression is consistent");
+}
+
+fn test_special_characters() {
+    print("=== TEST 8: Special Characters ===");
+    
+    var text = "Special: !@#$%^&*()_+-=[]{}|;:',.<>?/~`";
+    
+    var compressed = compress.compress(text, 6);
+    assert(compressed != nil, "Should handle special characters");
+    
+    var decompressed = compress.decompress(compressed);
+    assert(decompressed == text, "Special characters must be preserved");
+    
+    print("  ✓ Special characters preserved");
+}
+
+fn test_unicode() {
+    print("=== TEST 9: Unicode ===");
+    
+    var text = "Unicode: αβγδε 日本語 🎉✨";
+    
+    var compressed = compress.compress(text, 6);
+    assert(compressed != nil, "Should handle unicode");
+    
+    var decompressed = compress.decompress(compressed);
+    assert(decompressed == text, "Unicode must be preserved");
+    
+    print("  ✓ Unicode preserved");
+}
+
+fn main() {
+    print("╔════════════════════════════════════════════════════════════╗");
+    print("║  std.compress COMPLETE TEST SUITE                         ║");
+    print("║  Testing: Compression, Decompression, Edge Cases           ║");
+    print("╚════════════════════════════════════════════════════════════╝\n");
+    
+    var passed = 0;
+    var failed = 0;
+    
+    // Run all tests
+    test_round_trip_basic();
+    passed = passed + 1;
+    
+    test_compression_levels();
+    passed = passed + 1;
+    
+    test_empty_string();
+    passed = passed + 1;
+    
+    test_large_data();
+    passed = passed + 1;
+    
+    test_binary_data();
+    passed = passed + 1;
+    
+    test_compression_ratio();
+    passed = passed + 1;
+    
+    test_consistency();
+    passed = passed + 1;
+    
+    test_special_characters();
+    passed = passed + 1;
+    
+    test_unicode();
+    passed = passed + 1;
+    
+    var total = 9;
+    
+    print("\n╔════════════════════════════════════════════════════════════╗");
+    print("║  SUMMARY                                                  ║");
+    print("║  Total: {total}                                           ║");
+    print("║  Passed: {passed}                                         ║");
+    print("║  Status: ✓ ALL TESTS PASSED                              ║");
+    print("╚════════════════════════════════════════════════════════════╝");
+}

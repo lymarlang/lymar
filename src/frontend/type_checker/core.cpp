@@ -107,9 +107,12 @@ bool TypeChecker::check_program(std::shared_ptr<LM::Frontend::AST::Program> prog
 
         // Type check all loaded modules recursively
         auto all_modules = manager.get_all_modules();
+        std::cerr << "[PASS0] topo start, modules=" << all_modules.size() << "\n";
         std::vector<std::string> topo_order = manager.get_topological_order();
+        std::cerr << "[PASS0] topo_order size=" << topo_order.size() << "\n";
 
         for (const auto& path : topo_order) {
+            std::cerr << "[PASS0] processing " << path << "\n";
             if (path == "root") continue; // Skip root module recursion
             auto it = all_modules.find(path);
             if (it == all_modules.end()) continue;

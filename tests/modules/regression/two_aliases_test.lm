@@ -1,0 +1,15 @@
+// Regression: same module imported with two distinct aliases
+// Both must resolve independently — no cross-contamination
+print("=== Two Aliases Test ===");
+
+import tests.modules.regression.mod_a as a1;
+import tests.modules.regression.mod_a as a2;
+
+assert(a1.a_value == "A", "a1.a_value should be A");
+assert(a2.a_value == "A", "a2.a_value should be A");
+assert(a1.a_func() == "from_A", "a1.a_func() should work");
+assert(a2.a_func() == "from_A", "a2.a_func() should work");
+
+print("a1.a_value = {a1.a_value}");
+print("a2.a_value = {a2.a_value}");
+print("=== Two Aliases Test Complete ===");

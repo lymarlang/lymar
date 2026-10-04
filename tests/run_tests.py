@@ -54,6 +54,12 @@ tests = [
  "tests/modules/function_params_test.lm",
  "tests/modules/alias_import_test.lm",
  "tests/modules/multiple_imports_test.lm",
+ # Modules - Regression coverage
+ "tests/modules/regression/two_aliases_test.lm",
+ "tests/modules/regression/diff_filters_test.lm",
+ "tests/modules/regression/pub_import_test.lm",
+ "tests/modules/regression/diamond_test.lm",
+ "tests/modules/regression/reexport_diamond_test.lm",
  # OOP
  "tests/oop/frame_declaration.lm",
  "tests/oop/traits_dynamic.lm",

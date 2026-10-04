@@ -1,0 +1,13 @@
+// Regression: normal import + pub import of same module
+// pub import re-exports; the importing file must see both bindings correctly
+print("=== Pub Import Test ===");
+
+import tests.modules.regression.mod_reexport_mid as mid;
+
+// mid re-exports source_func from mod_reexport_source
+assert(mid.source_func() == "source", "re-exported source_func should work");
+assert(mid.mid_func() == "mid", "mid's own func should work");
+
+print("mid.source_func() = {mid.source_func()}");
+print("mid.mid_func() = {mid.mid_func()}");
+print("=== Pub Import Test Complete ===");

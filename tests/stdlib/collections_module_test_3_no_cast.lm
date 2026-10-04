@@ -1,0 +1,14 @@
+// Test 3: List import + instantiation without cast
+import std.collections.list as list_col;
+import std.collections.index as collections;
+
+fn test_list() {
+    print("Creating List directly from list_col...");
+    var list_val = list_col.List();
+    print("List created!");
+    return 1;
+}
+
+print("Calling test_list...");
+test_list();
+print("Done!");

@@ -26,6 +26,7 @@ struct Module {
     std::set<std::string> used_symbols;
     bool is_checked = false;
     bool is_initialized = false;
+    bool reexports_expanded = false;
 };
 
 class ModuleManager {

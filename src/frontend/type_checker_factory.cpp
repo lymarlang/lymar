@@ -50,15 +50,21 @@ TypeCheckResult check_program(std::shared_ptr<LM::Frontend::AST::Program> progra
 
     // Resolve all modules once at the beginning
     auto& manager = ModuleManager::getInstance();
+    std::cerr << "[FACTORY] clearing\n";
     manager.clear();
+    std::cerr << "[FACTORY] resolve_all start\n";
     manager.resolve_all(program, "root");
+    std::cerr << "[FACTORY] resolve_all done modules=" << manager.get_all_modules().size() << "\n";
 
     // Build dependency graph and detect cycles
+    std::cerr << "[FACTORY] graph build\n";
     ModuleGraph graph(manager.get_all_modules());
+    std::cerr << "[FACTORY] cycle check\n";
     if (graph.has_cycle()) {
         std::cerr << "[ERROR] Dependency graph has a cycle!" << std::endl;
         return TypeCheckResult(program, nullptr, false, {"Dependency graph cycle detected"});
     }
+    std::cerr << "[FACTORY] no cycle\n";
 
     // Verify declared dependencies exist
     std::vector<std::string> missing_dep_errors;
@@ -115,7 +121,9 @@ TypeCheckResult check_program(std::shared_ptr<LM::Frontend::AST::Program> progra
     // Global declaration resolution
     SymbolDatabase symbol_db;
     DeclarationResolver decl_resolver(symbol_db);
+    std::cerr << "[FACTORY] decl_resolver start\n";
     decl_resolver.resolve_all(manager);
+    std::cerr << "[FACTORY] decl_resolver done\n";
 
     // Detect unreachable modules (not reachable from root)
     std::set<std::string> visited;
@@ -156,7 +164,9 @@ TypeCheckResult check_program(std::shared_ptr<LM::Frontend::AST::Program> progra
     auto checker = create(*type_system, symbol_db);
     checker->set_verification_policy(policy);
     checker->set_source_context(source, file_path);
+    std::cerr << "[FACTORY] check_program start\n";
     bool success = checker->check_program(program);
+    std::cerr << "[FACTORY] check_program done\n";
     TypeCheckResult result(program, type_system, success, checker->get_errors());
     result.import_aliases = checker->get_import_aliases();
     result.registered_modules = checker->get_registered_modules();

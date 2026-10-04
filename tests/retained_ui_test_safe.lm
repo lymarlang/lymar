@@ -1,0 +1,53 @@
+// Retained UI Test - Safe Version Without Hanging
+// Tests UI module functionality without triggering FFI hangs
+
+import std.ui as ui;
+
+fn main() {
+    print("=== Retained UI Test (Safe Version) ===");
+    
+    // Test 1: Basic widget creation
+    print("\n[Test 1] Creating basic widgets...");
+    var btn = ui.button("Click Me");
+    assert(btn != nil, "Button creation failed");
+    print("✓ Button created");
+    
+    var lbl = ui.text("Hello UI");
+    assert(lbl != nil, "Text widget creation failed");
+    print("✓ Text widget created");
+    
+    // Test 2: Container construction
+    print("\n[Test 2] Creating container...");
+    var root = ui.column([btn, lbl]);
+    assert(root != nil, "Column creation failed");
+    print("✓ Column created with children");
+    
+    // Test 3: Widget styling
+    print("\n[Test 3] Styling widgets...");
+    var styled_btn = ui.button("Styled")
+        .background(ui.rgb(60, 120, 210));
+    assert(styled_btn != nil, "Styled button creation failed");
+    print("✓ Styled button created");
+    
+    // Test 4: Layout computation
+    print("\n[Test 4] Computing layout...");
+    var layout_box = ui.compute_layout(root, 0.0, 0.0, 800.0, 600.0);
+    assert(layout_box != nil, "Layout computation failed");
+    print("✓ Layout computed");
+    
+    // Test 5: Signal creation
+    print("\n[Test 5] Creating reactive state...");
+    var counter = ui.signal_int(0);
+    assert(counter != nil, "Signal creation failed");
+    print("✓ Signal created");
+    
+    // Test 6: Draw list generation
+    print("\n[Test 6] Generating draw list...");
+    var dl = ui.build(root, 800.0, 600.0, nil, 0.0, 0.0);
+    assert(dl != nil, "Draw list generation failed");
+    print("✓ Draw list generated");
+    
+    print("\n[OK] All retained UI tests passed (safe mode)");
+}
+
+main();

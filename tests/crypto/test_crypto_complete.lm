@@ -1,0 +1,278 @@
+// tests/crypto/test_crypto_complete.lm
+// Complete test suite for std.crypto (hashing, HMAC, secure random)
+
+import std.crypto as crypto;
+
+fn test_sha256_basic() {
+    print("=== TEST 1: SHA-256 Basic ===");
+    
+    var result = crypto.sha256("hello world");
+    assert(result != nil, "sha256 should return non-nil");
+    assert(len(result) == 64, "sha256 should return 64 hex chars (32 bytes)");
+    
+    // Known hash value for "hello world"
+    var expected = "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9";
+    assert(result == expected, "sha256 hash value mismatch");
+    
+    print("  ✓ SHA-256 basic hash correct");
+}
+
+fn test_sha256_consistency() {
+    print("=== TEST 2: SHA-256 Consistency ===");
+    
+    var hash1 = crypto.sha256("test data");
+    var hash2 = crypto.sha256("test data");
+    assert(hash1 == hash2, "sha256 should be deterministic");
+    
+    var hash3 = crypto.sha256("different data");
+    assert(hash1 != hash3, "Different inputs should produce different hashes");
+    
+    print("  ✓ SHA-256 is deterministic");
+}
+
+fn test_sha512() {
+    print("=== TEST 3: SHA-512 ===");
+    
+    var result = crypto.sha512("hello world");
+    assert(result != nil, "sha512 should return non-nil");
+    assert(len(result) == 128, "sha512 should return 128 hex chars (64 bytes)");
+    
+    print("  ✓ SHA-512 works");
+}
+
+fn test_sha1() {
+    print("=== TEST 4: SHA-1 ===");
+    
+    var result = crypto.sha1("hello world");
+    assert(result != nil, "sha1 should return non-nil");
+    assert(len(result) == 40, "sha1 should return 40 hex chars (20 bytes)");
+    
+    print("  ✓ SHA-1 works");
+}
+
+fn test_md5() {
+    print("=== TEST 5: MD5 ===");
+    
+    var result = crypto.md5("hello world");
+    assert(result != nil, "md5 should return non-nil");
+    assert(len(result) == 32, "md5 should return 32 hex chars (16 bytes)");
+    
+    // Known hash for "hello world"
+    var expected = "5eb63bbbe01eeed093cb22bb8f5acdc3";
+    assert(result == expected, "md5 hash value mismatch");
+    
+    print("  ✓ MD5 works");
+}
+
+fn test_hmac_sha256() {
+    print("=== TEST 6: HMAC-SHA256 ===");
+    
+    var key = "secret_key";
+    var data = "data to authenticate";
+    
+    var sig1 = crypto.hmac_sha256(key, data);
+    assert(sig1 != nil, "hmac_sha256 should return non-nil");
+    assert(len(sig1) > 0, "hmac sha256 should return non-empty string");
+    
+    var sig2 = crypto.hmac_sha256(key, data);
+    assert(sig1 == sig2, "HMAC should be deterministic");
+    
+    var sig3 = crypto.hmac_sha256("different_key", data);
+    assert(sig1 != sig3, "Different keys should produce different signatures");
+    
+    print("  ✓ HMAC-SHA256 works");
+}
+
+fn test_hmac_sha512() {
+    print("=== TEST 7: HMAC-SHA512 ===");
+    
+    var key = "secret";
+    var data = "message";
+    
+    var sig = crypto.hmac_sha512(key, data);
+    assert(sig != nil, "hmac_sha512 should return non-nil");
+    assert(len(sig) > 0, "hmac_sha512 should return non-empty");
+    
+    print("  ✓ HMAC-SHA512 works");
+}
+
+fn test_random_hex() {
+    print("=== TEST 8: Random Hex Generation ===");
+    
+    var hex1 = crypto.random_hex(16);
+    assert(hex1 != nil, "random_hex should return non-nil");
+    assert(len(hex1) > 0, "16 bytes should produce non-empty hex");
+    
+    var hex2 = crypto.random_hex(16);
+    assert(hex2 != nil, "Second random_hex should work");
+    assert(hex1 != hex2, "Consecutive random hex should be distinct");
+    
+    var hex_small = crypto.random_hex(4);
+    var hex_large = crypto.random_hex(32);
+    assert(len(hex_small) < len(hex_large), "Larger requests produce larger output");
+    
+    print("  ✓ Random hex generation works");
+}
+
+fn test_random_bytes() {
+    print("=== TEST 9: Random Bytes ===");
+    
+    var bytes1 = crypto.random_bytes(16);
+    assert(bytes1 != nil, "random_bytes should return non-nil");
+    
+    var bytes2 = crypto.random_bytes(16);
+    assert(bytes1 != bytes2, "Random bytes should be distinct");
+    
+    print("  ✓ Random bytes generation works");
+}
+
+fn test_uuid_v4() {
+    print("=== TEST 10: UUID v4 ===");
+    
+    var uuid = crypto.uuid();
+    assert(uuid != nil, "uuid should return non-nil");
+    assert(len(uuid) == 36, "UUID should be 36 characters (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)");
+    
+    var uuid2 = crypto.uuid();
+    assert(uuid != uuid2, "UUIDs should be unique");
+    
+    print("  Generated UUID: {uuid}");
+    print("  ✓ UUID v4 generation works");
+}
+
+fn test_hash_empty_string() {
+    print("=== TEST 11: Hash Empty String ===");
+    
+    var empty = "";
+    
+    var sha256_empty = crypto.sha256(empty);
+    assert(sha256_empty != nil, "sha256 of empty should work");
+    
+    var md5_empty = crypto.md5(empty);
+    assert(md5_empty != nil, "md5 of empty should work");
+    
+    print("  ✓ Hashing empty string works");
+}
+
+fn test_hash_large_string() {
+    print("=== TEST 12: Hash Large String ===");
+    
+    var large = "";
+    for (var i = 0; i < 1000; i = i + 1) {
+        large = large + "Data chunk number ";
+    }
+    
+    var hash = crypto.sha256(large);
+    assert(hash != nil, "sha256 of large string should work");
+    assert(len(hash) == 64, "sha256 length should be consistent");
+    
+    print("  ✓ Hashing large strings works");
+}
+
+fn test_hash_special_chars() {
+    print("=== TEST 13: Hash Special Characters ===");
+    
+    var special = "Special: !@#$%^&*()_+-=[]{}|;:',.<>?/~`";
+    
+    var hash = crypto.sha256(special);
+    assert(hash != nil, "sha256 should handle special characters");
+    assert(len(hash) == 64, "Length should be consistent");
+    
+    print("  ✓ Special characters handled");
+}
+
+fn test_hmac_edge_cases() {
+    print("=== TEST 14: HMAC Edge Cases ===");
+    
+    // Empty key
+    var sig1 = crypto.hmac_sha256("", "data");
+    assert(sig1 != nil, "HMAC with empty key should work");
+    
+    // Empty data
+    var sig2 = crypto.hmac_sha256("key", "");
+    assert(sig2 != nil, "HMAC with empty data should work");
+    
+    // Both empty
+    var sig3 = crypto.hmac_sha256("", "");
+    assert(sig3 != nil, "HMAC with empty key and data should work");
+    
+    print("  ✓ HMAC edge cases work");
+}
+
+fn test_random_sizes() {
+    print("=== TEST 15: Random Sizes ===");
+    
+    var small = crypto.random_hex(1);
+    assert(len(small) > 0, "1 byte should produce some output");
+    
+    var medium = crypto.random_hex(16);
+    var large = crypto.random_hex(256);
+    
+    assert(len(large) > len(medium), "Larger requests should produce more output");
+    assert(len(medium) > len(small), "Medium should be more than small");
+    
+    print("  ✓ Random generation with various sizes works");
+}
+
+fn main() {
+    print("╔════════════════════════════════════════════════════════════╗");
+    print("║  std.crypto COMPLETE TEST SUITE                           ║");
+    print("║  Testing: Hashing, HMAC, Secure Random, UUID              ║");
+    print("╚════════════════════════════════════════════════════════════╝\n");
+    
+    var passed = 0;
+    
+    test_sha256_basic();
+    passed = passed + 1;
+    
+    test_sha256_consistency();
+    passed = passed + 1;
+    
+    test_sha512();
+    passed = passed + 1;
+    
+    test_sha1();
+    passed = passed + 1;
+    
+    test_md5();
+    passed = passed + 1;
+    
+    test_hmac_sha256();
+    passed = passed + 1;
+    
+    test_hmac_sha512();
+    passed = passed + 1;
+    
+    test_random_hex();
+    passed = passed + 1;
+    
+    test_random_bytes();
+    passed = passed + 1;
+    
+    test_uuid_v4();
+    passed = passed + 1;
+    
+    test_hash_empty_string();
+    passed = passed + 1;
+    
+    test_hash_large_string();
+    passed = passed + 1;
+    
+    test_hash_special_chars();
+    passed = passed + 1;
+    
+    test_hmac_edge_cases();
+    passed = passed + 1;
+    
+    test_random_sizes();
+    passed = passed + 1;
+    
+    var total = 15;
+    
+    print("\n╔════════════════════════════════════════════════════════════╗");
+    print("║  SUMMARY                                                  ║");
+    print("║  Total: {total}                                           ║");
+    print("║  Passed: {passed}                                         ║");
+    print("║  Status: ✓ ALL TESTS PASSED                              ║");
+    print("╚════════════════════════════════════════════════════════════╝");
+}

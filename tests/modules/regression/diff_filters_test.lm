@@ -1,0 +1,17 @@
+// Regression: same module imported with different show/hide filters
+// Each import site must apply its own filter independently
+print("=== Different Filters Test ===");
+
+import tests.modules.regression.mod_a as all_of_a;
+import tests.modules.regression.mod_a as just_func show a_func;
+
+// Full import: both symbols accessible
+assert(all_of_a.a_value == "A", "all_of_a.a_value should be accessible");
+assert(all_of_a.a_func() == "from_A", "all_of_a.a_func should be accessible");
+
+// Filtered import: only a_func was shown
+assert(just_func.a_func() == "from_A", "just_func.a_func should be accessible");
+
+print("all_of_a.a_value = {all_of_a.a_value}");
+print("just_func.a_func() = {just_func.a_func()}");
+print("=== Different Filters Test Complete ===");

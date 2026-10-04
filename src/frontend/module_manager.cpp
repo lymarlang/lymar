@@ -168,9 +168,11 @@ void ModuleManager::extract_metadata(std::shared_ptr<Module> module) {
 void ModuleManager::expand_reexports(std::shared_ptr<Module> module) {
     if (!module || !module->ast) return;
 
-    // Guards against `pub import` cycles (A re-exports B which re-exports A).
+    // Already expanded — skip. This is the primary deduplication guard.
+    if (module->reexports_expanded) return;
     static thread_local std::set<std::string> expanding;
     if (!expanding.insert(module->name).second) return;
+    module->reexports_expanded = true;
 
     auto declared_name = [](const std::shared_ptr<AST::Statement>& stmt) -> std::string {
         if (auto f = std::dynamic_pointer_cast<AST::FunctionDeclaration>(stmt)) return f->name;

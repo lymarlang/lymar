@@ -1,0 +1,7 @@
+// Test 2a: Just list import
+print("Test 2a: Testing list import");
+
+import std.collections.list as list_col;
+print("  - list imported OK");
+
+print("Done!");

@@ -1,0 +1,22 @@
+// Test 3: Minimal collections test
+import std.collections.index as collections;
+
+fn test_list(): int {
+    print("Testing List...");
+    var list_val = collections.List();
+    assert(list_val.length() == 0, "List should be empty initially");
+    
+    list_val.append("first");
+    list_val.push("second");
+    assert(list_val.length() == 2, "List length should be 2");
+    return 1;
+}
+
+fn main(): int {
+    print("=== Collections Module Test Suite ===");
+    assert(test_list() == 1, "List test failed");
+    print("All tests passed!");
+    return 0;
+}
+
+main();

@@ -102,5 +102,14 @@ frame Theme {
     }
 }
 
-// Global theme instance
-pub var global_theme: Theme = Theme();
+// Global theme — lazily initialized to avoid top-level evaluation recursion
+pub var _global_theme: Theme? = nil;
+
+pub fn global_theme(): Theme {
+    if (_global_theme == nil) { _global_theme = Theme(); }
+    return _global_theme as Theme;
+}
+
+pub fn set_global_theme(t: Theme): nil {
+    _global_theme = t;
+}

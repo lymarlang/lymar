@@ -1,0 +1,16 @@
+// Test 2d: List import + instantiation
+print("Test 2d: Testing list instantiation");
+
+import std.collections.list as list_col;
+print("  - list imported");
+
+fn test_list() {
+    print("Creating List...");
+    var list_val = list_col.List();
+    print("List created!");
+    return 1;
+}
+
+print("Calling test_list...");
+test_list();
+print("Done!");

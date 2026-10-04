@@ -1,0 +1,7 @@
+// Test 2b: Just deque import
+print("Test 2b: Testing deque import");
+
+import std.collections.deque as deque_col;
+print("  - deque imported OK");
+
+print("Done!");

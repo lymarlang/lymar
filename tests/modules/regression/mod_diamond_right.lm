@@ -1,0 +1,6 @@
+// Diamond right - also imports base
+import tests.modules.regression.mod_a as base;
+
+pub fn right_value(): str {
+    return "right_" + base.a_func();
+}
